@@ -1,0 +1,35 @@
+---
+
+
+default: -p dev -p report -p dot -p cucumber -p pretty -p chrome --publish
+
+# format
+cucumber: -r features
+pretty: --no-source --color --format pretty
+dot: --format progress
+
+# ambientes
+dev: ENV=dev
+hml: ENV=hml
+prd: ENV=prd
+
+# reports
+report: --format html -o execution_report.html -f json -o execution.json -x
+html: --format html --out=reports/relatorio_front.html
+json_report:  --format message --out=reports/relatorio_api.json
+
+# browsers
+chrome: BROWSER=chrome
+firefox: BROWSER=firefox
+ie: BROWSER=internet_explorer
+chrome_headless: BROWSER=chrome_headless
+firefox_headless: BROWSER=firefox_headless
+
+
+
+ 
+
+
+
+
+

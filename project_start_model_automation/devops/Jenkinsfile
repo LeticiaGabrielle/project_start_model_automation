@@ -1,0 +1,53 @@
+def COLOR_MAP = ['SUCCESS': 'good', 'FAILURE': 'danger', 'UNSTABLE': 'danger', 'ABORTED': 'danger']
+
+def SetPath(nodejsversion = ' ') {
+    return sh (script: ". nvmuse " + nodejsversion,returnStdout: true).trim()
+}
+
+pipeline {
+    agent { node { label 'linux && nodejs' } }
+
+    environment {
+    PROJECT_NAME = "smartcontract_automation"
+    SLACK_CHANNEL = "#smartcontract-test-notification"
+    DOCKER_REPOSITORY  = credentials('DOCKER_REPOSITORY')
+    DOCKER_USER_LOGIN  = credentials('DOCKER_USER_LOGIN')
+    DOCKER_USER_PASS   = credentials('DOCKER_USER_PASS')
+    NODEJS_VERSION="v12"
+    PATH = SetPath("${env.NODEJS_VERSION}")
+
+  }
+
+    options {
+        timeout(time: 1, unit: 'HOURS')
+    }
+    
+    stages {
+         stage('Notify start') {
+            steps {
+                slackSend(color: '#33AFFF', message: "*STARTED*: Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]'\n *More info at:* ${env.BUILD_URL}", channel: "${env.SLACK_CHANNEL}")
+            }
+        }
+        stage('Accept Tests') {
+             steps{
+                sh 'bash -x script/smart.sh'
+            }
+        }
+        stage ('Cucumber Reports') {
+            steps {
+                cucumber buildStatus: "",
+                    fileIncludePattern: "**execution.json",
+                    jsonReportDirectory: ''
+            }
+        }
+    }
+    post {
+        always {
+
+            slackSend channel: "${env.SLACK_CHANNEL}",
+                      color: COLOR_MAP[currentBuild.currentResult],
+                      message: "*${currentBuild.currentResult}:* Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]'\n *More info at:* ${env.BUILD_URL}"
+            
+        }
+    }        
+}

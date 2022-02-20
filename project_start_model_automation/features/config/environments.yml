@@ -1,0 +1,10 @@
+---
+
+dev:
+  smart_modulos: "http://"
+  keycloak: "https://"
+  
+hml:
+  smart_modulos: "http://"
+  keycloak: "https://"
+

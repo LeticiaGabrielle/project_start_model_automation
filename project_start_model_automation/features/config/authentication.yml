@@ -1,0 +1,21 @@
+dev:
+  keycloak:
+    password: teste
+    username: teste
+    grant_type: password
+    client_id: smartcontract
+
+hml:
+  keycloak:
+    password: teste
+    username: teste
+    grant_type: password
+    client_id: smartcontract
+
+prd:
+  keycloak:
+    password: teste
+    username: teste
+    grant_type: password
+    client_id: smartcontract
+
